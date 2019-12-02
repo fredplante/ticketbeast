@@ -17,8 +17,25 @@ class ConcertTest < ActiveSupport::TestCase
   test "can order concert tickets" do
     concert = create(:concert)
 
-    order = concert.order_tickets("john.doa@acme.org", 3)
-    assert_equal "john.doa@acme.org", order.email
+    order = concert.order_tickets("john.doe@acme.org", 3)
+    assert_equal "john.doe@acme.org", order.email
     assert_equal 3, order.tickets.count
+  end
+
+  test "can add tickets" do
+    concert = create(:concert)
+
+    concert.add_tickets(50);
+
+    assert_equal 50, concert.tickets_remaining
+  end
+
+  test "tickets_remaining does not include tickets associated with an order" do
+    concert = create(:concert)
+    concert.add_tickets(50)
+
+    concert.order_tickets("john.doe@acme.org", 30)
+
+    assert_equal 20, concert.tickets_remaining
   end
 end
