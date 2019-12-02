@@ -16,6 +16,6 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
 
     order = concert.orders.where(email: "john@example.com").first
     refute_nil order
-    assert_equal 3, order.ticket_quantity
+    assert_equal 3, order.tickets.count
   end
 end
