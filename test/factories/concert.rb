@@ -10,5 +10,13 @@ FactoryBot.define do
     state { "ON" }
     zip { "90210" }
     additional_information { "For tickets, call (555) 555-5555" }
+
+    trait :published do
+      published_at { 1.week.ago }
+    end
+
+    trait :unpublished do
+      published_at { nil }
+    end
   end
 end

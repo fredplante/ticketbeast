@@ -2,7 +2,7 @@ require "test_helper"
 
 class ViewConcertListingTest < ActionDispatch::IntegrationTest
   test "user can view a published concert listing" do
-    concert = Concert.create(
+    concert = create(:concert, :published,
     	title: "The Red Chord",
     	subtitle: "with Animosity and Lethargy",
     	date: Time.zone.parse("December 13, 2016 8:00pm"),
@@ -13,7 +13,6 @@ class ViewConcertListingTest < ActionDispatch::IntegrationTest
     	state: "ON",
     	zip: "17916",
     	additional_information: "For tickets, call (555) 555-5555",
-      published_at: 1.week.ago
     )
 
     get "/concerts/#{concert.id}"
@@ -30,7 +29,7 @@ class ViewConcertListingTest < ActionDispatch::IntegrationTest
   end
 
   test "user cannot view unpublished concert listings" do
-    concert = create(:concert, published_at: nil)
+    concert = create(:concert, :unpublished)
 
     get "/concerts/#{concert.id}"
 
