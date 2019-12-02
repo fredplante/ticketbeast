@@ -13,4 +13,12 @@ class ConcertTest < ActiveSupport::TestCase
     assert_includes published_concerts, published_concert_2
     refute_includes published_concerts, unpublished_concert
   end
+
+  test "can order concert tickets" do
+    concert = create(:concert)
+
+    order = concert.order_tickets("john.doa@acme.org", 3)
+    assert_equal "john.doa@acme.org", order.email
+    assert_equal 3, order.tickets.count
+  end
 end

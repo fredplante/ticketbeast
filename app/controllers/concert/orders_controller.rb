@@ -2,13 +2,9 @@ class Concert::OrdersController < ApplicationController
   before_action :set_concert
 
   def create
-    ticket_quantity = params[:ticket_quantity]
-    payment_token = params[:payment_token]
-    amount = ticket_quantity * @concert.ticket_price
-    payment_gateway.charge(amount, payment_token)
+    payment_gateway.charge(params[:ticket_quantity] * @concert.ticket_price, params[:payment_token])
+    @concert.order_tickets(params[:email], params[:ticket_quantity])
 
-    order = @concert.orders.create(email: params[:email])
-    (1..ticket_quantity).each { order.tickets.create }
     render json: {}, status: :created
   end
 
