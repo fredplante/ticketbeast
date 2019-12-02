@@ -22,6 +22,20 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
     assert_equal 3, order.tickets.count
   end
 
+  test "an order is not created if payment fails" do
+    concert = create(:concert, ticket_price: 3250)
+    PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
+
+    order_tickets(concert, {
+      email: "john@example.com", ticket_quantity: 3,
+                                   payment_token: "invalid-payment-token"
+    })
+
+    assert_response :unprocessable_entity
+    order = concert.orders.where(email: "john@example.com").first
+    assert_nil order
+  end
+
   test "email is required to purchase tickets" do
     concert = create(:concert)
 

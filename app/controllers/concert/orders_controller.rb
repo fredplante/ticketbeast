@@ -4,10 +4,15 @@ class Concert::OrdersController < ApplicationController
   def create
     form = PurchaseTicketsForm.new(purchase_tickets_params)
     if form.valid?
-      payment_gateway.charge(params[:ticket_quantity] * @concert.ticket_price, params[:payment_token])
-      @concert.order_tickets(params[:email], params[:ticket_quantity])
 
-      render json: {}, status: :created
+      begin
+        payment_gateway.charge(params[:ticket_quantity] * @concert.ticket_price, params[:payment_token])
+        @concert.order_tickets(params[:email], params[:ticket_quantity])
+
+        render json: {}, status: :created
+      rescue PaymentGateway::PaymentFailedError
+        render json: {}, status: :unprocessable_entity
+      end
     else
       render json: form.errors, status: :unprocessable_entity
     end

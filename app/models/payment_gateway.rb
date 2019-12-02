@@ -1,4 +1,6 @@
 module PaymentGateway
+  class PaymentFailedError < StandardError; end
+
   def self.create_adapter
     adapter_class.new
   end
