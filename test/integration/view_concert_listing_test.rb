@@ -27,4 +27,13 @@ class ViewConcertListingTest < ActionDispatch::IntegrationTest
     assert_match "Laraville, ON 17916", response.body
     assert_match "For tickets, call (555) 555-5555", response.body
   end
+
+  test "user cannot view unpublished concert listings" do
+    concert = create(:concert, published_at: nil)
+
+    get "/concerts/#{concert.id}"
+
+    assert_response :not_found
+  end
+
 end
