@@ -11,7 +11,7 @@ module PaymentGateway
     end
 
     def total_charges
-      @charges.reduce(:+)
+      @charges.reduce(0, :+)
     end
 
     def valid_test_token

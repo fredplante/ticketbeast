@@ -4,7 +4,6 @@ class Concert::OrdersController < ApplicationController
   def create
     form = PurchaseTicketsForm.new(purchase_tickets_params)
     if form.valid?
-
       begin
         payment_gateway.charge(params[:ticket_quantity] * @concert.ticket_price, params[:payment_token])
         @concert.order_tickets(params[:email], params[:ticket_quantity])
@@ -21,7 +20,7 @@ class Concert::OrdersController < ApplicationController
   private
 
   def set_concert
-    @concert = Concert.find(params[:concert_id])
+    @concert = Concert.published.find(params[:concert_id])
   end
 
   def payment_gateway
@@ -31,4 +30,8 @@ class Concert::OrdersController < ApplicationController
   def purchase_tickets_params
     params.permit(:email, :ticket_quantity, :payment_token)
   end
+
+	rescue_from ActiveRecord::RecordNotFound do
+		render json: { error: "concert not found" }, status: :not_found
+	end
 end

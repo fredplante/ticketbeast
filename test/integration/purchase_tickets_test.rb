@@ -5,8 +5,8 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
     @payment_gateway = PaymentGateway::FakeAdapter.new
   end
 
-  test "customer can purchase concert tickets" do
-    concert = create(:concert, ticket_price: 3250)
+  test "customer can purchase tickets to published concert" do
+    concert = create(:concert, :published, ticket_price: 3250)
     PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
 
     order_tickets(concert, {
@@ -23,7 +23,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
   end
 
   test "an order is not created if payment fails" do
-    concert = create(:concert, ticket_price: 3250)
+    concert = create(:concert, :published, ticket_price: 3250)
     PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
 
     order_tickets(concert, {
@@ -36,8 +36,21 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
     assert_nil order
   end
 
+  test "cannot purchase tickets to an unpublished concert" do
+    concert = create(:concert, :unpublished)
+
+    order_tickets(concert, {
+      email: "john@example.com", ticket_quantity: 3,
+                                   payment_token: @payment_gateway.valid_test_token
+    })
+
+    assert_response :not_found
+    assert_equal 0, concert.orders.count
+    assert_equal 0, @payment_gateway.total_charges
+  end
+
   test "email is required to purchase tickets" do
-    concert = create(:concert)
+    concert = create(:concert, :published)
 
     order_tickets(concert, {
       ticket_quantity: 3, payment_token: @payment_gateway.valid_test_token })
@@ -46,7 +59,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
   end
 
   test "email must be valid to purchase tickets" do
-    concert = create(:concert)
+    concert = create(:concert, :published)
 
     order_tickets(concert, {
       email: "not-a-valid-email", ticket_quantity: 3,
@@ -57,7 +70,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
   end
 
   test "ticket quantity is required to purchase tickets" do
-    concert = create(:concert)
+    concert = create(:concert, :published)
 
     order_tickets(concert, {
       email: "john@example.com", payment_token: @payment_gateway.valid_test_token
@@ -67,7 +80,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
   end
 
   test "ticket quantity must be at least 1 to purchase tickets" do
-    concert = create(:concert)
+    concert = create(:concert, :published)
 
     order_tickets(concert, {
       email: "john@example.com", ticket_quantity: 0,
@@ -78,7 +91,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
   end
 
   test "payment_token is required" do
-    concert = create(:concert)
+    concert = create(:concert, :published)
 
     order_tickets(concert, { email: "john@example.com", ticket_quantity: 1 })
 
