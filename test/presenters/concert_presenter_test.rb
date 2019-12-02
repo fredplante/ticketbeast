@@ -1,3 +1,5 @@
+require "test_helper"
+
 class ConcertPresenterTest < ActionView::TestCase
   test "can get formatted date" do
     concert = build(:concert, date: Time.zone.parse("2016-12-01 8:00pm"))

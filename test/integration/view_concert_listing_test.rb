@@ -1,7 +1,7 @@
-require 'test_helper'
+require "test_helper"
 
 class ViewConcertListingTest < ActionDispatch::IntegrationTest
-  test "user can view a concert listing" do
+  test "user can view a published concert listing" do
     concert = Concert.create(
     	title: "The Red Chord",
     	subtitle: "with Animosity and Lethargy",
@@ -12,7 +12,8 @@ class ViewConcertListingTest < ActionDispatch::IntegrationTest
     	city: "Laraville",
     	state: "ON",
     	zip: "17916",
-    	additional_information: "For tickets, call (555) 555-5555"
+    	additional_information: "For tickets, call (555) 555-5555",
+      published_at: 1.week.ago
     )
 
     get "/concerts/#{concert.id}"
