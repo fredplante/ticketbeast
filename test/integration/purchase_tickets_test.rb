@@ -49,6 +49,24 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
     assert_equal 0, @payment_gateway.total_charges
   end
 
+  test "cannot purchase more ticket than remain" do
+    concert = create(:concert, :published)
+    concert.add_tickets(50)
+
+    PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
+
+    order_tickets(concert, {
+      email: "john@example.com", ticket_quantity: 51,
+                                   payment_token: @payment_gateway.valid_test_token
+    })
+
+    assert_response :unprocessable_entity
+    order = concert.orders.where(email: "john@example.com").first
+    assert_nil order
+    assert_equal 0, @payment_gateway.total_charges
+    assert_equal 50, order.tickets_remaining
+  end
+
   test "email is required to purchase tickets" do
     concert = create(:concert, :published)
 
