@@ -19,15 +19,17 @@ class FakeAdapterTest < ActiveSupport::TestCase
 
   test "running a hook before the first charge" do
     payment_gateway = PaymentGateway::FakeAdapter.new
-    callback_ran = false
+    callback_ran_count = 0
 
     payment_gateway.before_charge_callback = proc {
-      callback_ran = true
-      assert_equal 0, payment_gateway.total_charges
+      callback_ran_count += 1
+      payment_gateway.charge(2500, payment_gateway.valid_test_token)
+
+      assert_equal 2500, payment_gateway.total_charges
     }
 
     payment_gateway.charge(2500, payment_gateway.valid_test_token)
-    assert_equal 2500, payment_gateway.total_charges
-    assert callback_ran
+    assert_equal 5000, payment_gateway.total_charges
+    assert_equal 1, callback_ran_count
   end
 end

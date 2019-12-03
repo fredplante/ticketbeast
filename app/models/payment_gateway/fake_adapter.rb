@@ -32,7 +32,9 @@ module PaymentGateway
     def run_before_charge_callback
       return unless before_charge_callback.is_a? Proc
 
-      before_charge_callback.call
+      callback = before_charge_callback
+      self.before_charge_callback = nil
+      callback.call
     end
   end
 end
