@@ -29,8 +29,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
     PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
 
     order_tickets(concert, {
-      email: "john@example.com", ticket_quantity: 3,
-                                   payment_token: "invalid-payment-token"
+      email: "john@example.com", ticket_quantity: 3, payment_token: "invalid-payment-token"
     })
 
     assert_response :unprocessable_entity
