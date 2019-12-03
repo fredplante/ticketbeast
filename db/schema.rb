@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2019_12_02_132503) do
   create_table "tickets", force: :cascade do |t|
     t.bigint "order_id"
     t.bigint "concert_id", null: false
+    t.datetime "reserved_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["concert_id"], name: "index_tickets_on_concert_id"

@@ -60,4 +60,14 @@ class ConcertTest < ActiveSupport::TestCase
     refute concert.has_order_for?("jane.doe@acme.org")
     assert_equal 2, concert.tickets_remaining
   end
+
+  test "can reserve available tickets" do
+    concert = create(:concert).add_tickets(3)
+    assert_equal 3, concert.tickets_remaining
+
+    reserved_tickets = concert.reserve_tickets(2)
+
+    assert_equal 2, reserved_tickets.count
+    assert_equal 1, concert.tickets_remaining
+  end
 end

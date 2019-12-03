@@ -4,6 +4,10 @@ class Ticket < ApplicationRecord
 
   scope :available, -> { where(order_id: nil) }
 
+  def reserve!
+    touch(:reserved_at)
+  end
+
   def release!
     update!(order_id: nil)
   end
