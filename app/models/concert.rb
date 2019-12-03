@@ -7,6 +7,14 @@ class Concert < ApplicationRecord
 
   scope :published, ->{ where.not(published_at: nil) }
 
+  def has_order_for?(customer_email)
+    orders_for(customer_email).exists?
+  end
+
+  def orders_for(customer_email)
+    orders.where(email: customer_email)
+  end
+
   def order_tickets(email, quantity)
     orders.build(email: email).tap do |order|
       ordered_tickets = tickets.available.take(quantity)
@@ -20,6 +28,7 @@ class Concert < ApplicationRecord
 
   def add_tickets(quantity)
     (1..quantity).each { tickets.create }
+    self
   end
 
   def tickets_remaining

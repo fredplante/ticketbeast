@@ -2,8 +2,7 @@ require "test_helper"
 
 class OrderTest < ActiveSupport::TestCase
   test "tickets are released when an order is cancelled" do
-    concert = create(:concert)
-    concert.add_tickets(10)
+    concert = create(:concert).add_tickets(10)
     order = concert.order_tickets("jane.doe@acme.org", 5)
     assert_equal 5, concert.tickets_remaining
 

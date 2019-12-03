@@ -15,12 +15,11 @@ class ConcertTest < ActiveSupport::TestCase
   end
 
   test "can order concert tickets" do
-    concert = create(:concert)
-    concert.add_tickets(3);
+    concert = create(:concert).add_tickets(3);
 
     order = concert.order_tickets("john.doe@acme.org", 3)
     assert_equal "john.doe@acme.org", order.email
-    assert_equal 3, order.tickets.count
+    assert_equal 3, order.ticket_quantity
   end
 
   test "can add tickets" do
@@ -32,8 +31,7 @@ class ConcertTest < ActiveSupport::TestCase
   end
 
   test "tickets_remaining does not include tickets associated with an order" do
-    concert = create(:concert)
-    concert.add_tickets(50)
+    concert = create(:concert).add_tickets(50)
 
     concert.order_tickets("john.doe@acme.org", 30)
 
@@ -41,29 +39,25 @@ class ConcertTest < ActiveSupport::TestCase
   end
 
   test "trying to purchase more tickets than remains throws an exception" do
-    concert = create(:concert)
-    concert.add_tickets(10)
+    concert = create(:concert).add_tickets(10)
 
     assert_raises(Concert::NotEnoughTicketsError) {
       concert.order_tickets("john.doe@acme.org", 11)
     }
 
-    order = Order.where(email: "john.doe@acme.org").first
-    assert_nil order
+    refute concert.has_order_for?("john.doe@acme.org")
     assert_equal 10, concert.tickets_remaining
   end
 
   test "cannot order tickets that have been already purchased" do
-    concert = create(:concert)
-    concert.add_tickets(10)
+    concert = create(:concert).add_tickets(10)
     concert.order_tickets("john.doe@acme.org", 8)
 
     assert_raises(Concert::NotEnoughTicketsError) {
       concert.order_tickets("jane.doe@acme.org", 3)
     }
 
-    jane_order = Order.where(email: "jane.doe@acme.org").first
-    assert_nil jane_order
+    refute concert.has_order_for?("jane.doe@acme.org")
     assert_equal 2, concert.tickets_remaining
   end
 end
