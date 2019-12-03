@@ -2,8 +2,8 @@ class Concert < ApplicationRecord
 
   class NotEnoughTicketsError < StandardError; end
 
-  has_many :orders
   has_many :tickets
+  has_many :orders, through: :tickets
 
   scope :published, ->{ where.not(published_at: nil) }
 
@@ -22,7 +22,7 @@ class Concert < ApplicationRecord
   end
 
   def add_tickets(quantity)
-    (1..quantity).each { tickets.create }
+    (1..quantity).each { tickets.create! }
     self
   end
 
@@ -31,9 +31,9 @@ class Concert < ApplicationRecord
   end
 
   def create_order(email, tickets)
-    order = orders.build(email: email, amount: ticket_price * tickets.count)
+    order = Order.new(email: email, amount: tickets.map(&:price).sum)
     order.tickets = tickets
-    order.save
+    order.save!
     order
   end
 

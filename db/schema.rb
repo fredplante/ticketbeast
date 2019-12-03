@@ -32,12 +32,10 @@ ActiveRecord::Schema.define(version: 2019_12_02_132503) do
   end
 
   create_table "orders", force: :cascade do |t|
-    t.bigint "concert_id", null: false
     t.string "email", null: false
     t.integer "amount", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["concert_id"], name: "index_orders_on_concert_id"
   end
 
   create_table "tickets", force: :cascade do |t|
@@ -49,7 +47,6 @@ ActiveRecord::Schema.define(version: 2019_12_02_132503) do
     t.index ["order_id"], name: "index_tickets_on_order_id"
   end
 
-  add_foreign_key "orders", "concerts"
   add_foreign_key "tickets", "concerts"
   add_foreign_key "tickets", "orders"
 end

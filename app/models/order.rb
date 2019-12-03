@@ -1,6 +1,6 @@
 class Order < ApplicationRecord
   has_many :tickets
-  belongs_to :concert
+  belongs_to :concert, optional: true
 
   def ticket_quantity
     tickets.count
