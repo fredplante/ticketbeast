@@ -1,4 +1,7 @@
 class Concert < ApplicationRecord
+
+  class NotEnoughTicketsError < StandardError; end
+
   has_many :orders
   has_many :tickets
 
@@ -6,7 +9,10 @@ class Concert < ApplicationRecord
 
   def order_tickets(email, quantity)
     orders.build(email: email).tap do |order|
-      ordered_tickets = tickets.take(quantity)
+      ordered_tickets = tickets.available.take(quantity)
+      if ordered_tickets.count < quantity
+        raise NotEnoughTicketsError.new("Not enough tickets available")
+      end
       order.tickets = ordered_tickets
       order.save
     end

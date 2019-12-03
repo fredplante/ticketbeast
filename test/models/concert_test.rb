@@ -16,6 +16,7 @@ class ConcertTest < ActiveSupport::TestCase
 
   test "can order concert tickets" do
     concert = create(:concert)
+    concert.add_tickets(3);
 
     order = concert.order_tickets("john.doe@acme.org", 3)
     assert_equal "john.doe@acme.org", order.email
@@ -37,5 +38,32 @@ class ConcertTest < ActiveSupport::TestCase
     concert.order_tickets("john.doe@acme.org", 30)
 
     assert_equal 20, concert.tickets_remaining
+  end
+
+  test "trying to purchase more tickets than remains throws an exception" do
+    concert = create(:concert)
+    concert.add_tickets(10)
+
+    assert_raises(Concert::NotEnoughTicketsError) {
+      concert.order_tickets("john.doe@acme.org", 11)
+    }
+
+    order = Order.where(email: "john.doe@acme.org").first
+    assert_nil order
+    assert_equal 10, concert.tickets_remaining
+  end
+
+  test "cannot order tickets that have been already purchased" do
+    concert = create(:concert)
+    concert.add_tickets(10)
+    concert.order_tickets("john.doe@acme.org", 8)
+
+    assert_raises(Concert::NotEnoughTicketsError) {
+      concert.order_tickets("jane.doe@acme.org", 3)
+    }
+
+    jane_order = Order.where(email: "jane.doe@acme.org").first
+    assert_nil jane_order
+    assert_equal 2, concert.tickets_remaining
   end
 end
