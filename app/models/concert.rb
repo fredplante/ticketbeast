@@ -31,10 +31,7 @@ class Concert < ApplicationRecord
   end
 
   def create_order(email, tickets)
-    order = Order.new(email: email, amount: tickets.map(&:price).sum)
-    order.tickets = tickets
-    order.save!
-    order
+    Order.for_tickets(tickets, email)
   end
 
   def find_tickets(quantity)
