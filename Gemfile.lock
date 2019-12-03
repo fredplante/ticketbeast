@@ -164,6 +164,9 @@ GEM
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
+    workable_json_assertions (0.1.1)
+      actionpack (>= 4.2)
+      actionview (>= 4.2)
     xpath (3.2.0)
       nokogiri (~> 1.8)
 
@@ -187,6 +190,7 @@ DEPENDENCIES
   tzinfo-data
   web-console (>= 3.3.0)
   webdrivers (~> 3.0)
+  workable_json_assertions
 
 RUBY VERSION
    ruby 2.4.5p335

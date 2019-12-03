@@ -15,6 +15,13 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
     })
 
     assert_response :created
+
+    assert_json_response_includes({
+      email: "john@example.com",
+      ticket_quantity: 3,
+      amount: 9750
+    })
+
     assert_equal 9750, @payment_gateway.total_charges
     assert concert.has_order_for?("john@example.com")
     assert_equal 3, concert.orders_for("john@example.com").first.ticket_quantity
