@@ -6,9 +6,11 @@ class Concert::OrdersController < ApplicationController
     if form.valid?
       begin
         tickets = @concert.find_tickets(params[:ticket_quantity])
-        payment_gateway.charge(tickets.map(&:price).sum, params[:payment_token])
+        reservation = Reservation.new(tickets)
 
-        @order = Order.for_tickets(tickets, params[:email], tickets.map(&:price).sum)
+        payment_gateway.charge(reservation.total_cost, params[:payment_token])
+
+        @order = Order.for_tickets(tickets, params[:email], reservation.total_cost)
 
         render :create, status: :created
       rescue Concert::NotEnoughTicketsError => error
