@@ -2,8 +2,11 @@ require "test_helper"
 
 class ReservationTest < ActiveSupport::TestCase
   test "calculating the total cost" do
-    concert = create(:concert, ticket_price: 1200).add_tickets(3)
-    tickets = concert.find_tickets(3)
+    tickets = [
+      stub(price: 1200),
+      stub(price: 1200),
+      stub(price: 1200),
+    ]
 
     reservation = Reservation.new(tickets)
 
