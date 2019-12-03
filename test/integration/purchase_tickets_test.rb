@@ -66,6 +66,31 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
     assert_equal 50, concert.tickets_remaining
   end
 
+  test "cannot purchase tickets another customer is already trying to purchase" do
+    concert = create(:concert, :published, ticket_price: 1200).add_tickets(3)
+    PaymentGateway.expects(:create_adapter).times(3).returns(@payment_gateway)
+
+    @payment_gateway.before_charge_callback = proc {
+      order_tickets(concert, {
+        email: "person_b@example.com", ticket_quantity: 1,
+                                         payment_token: @payment_gateway.valid_test_token
+      })
+
+      assert_response :unprocessable_entity
+      refute concert.has_order_for?("john@example.com")
+      assert_equal 0, @payment_gateway.total_charges
+    }
+
+    order_tickets(concert, {
+      email: "person_a@example.com", ticket_quantity: 3,
+                                       payment_token: @payment_gateway.valid_test_token
+    })
+
+    assert_equal 3600, @payment_gateway.total_charges
+    assert concert.has_order_for?("person_a@example.com")
+    assert_equal 3, concert.orders_for("person_a@example.com").first.ticket_quantity
+  end
+
   test "email is required to purchase tickets" do
     concert = create(:concert, :published)
 
