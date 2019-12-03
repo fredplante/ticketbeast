@@ -77,7 +77,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
       })
 
       assert_response :unprocessable_entity
-      refute concert.has_order_for?("john@example.com")
+      refute concert.has_order_for?("person_b@example.com")
       assert_equal 0, @payment_gateway.total_charges
     }
 
