@@ -2,7 +2,7 @@ class Ticket < ApplicationRecord
   belongs_to :order, optional: true
   belongs_to :concert
 
-  scope :available, -> { where(order_id: nil) }
+  scope :available, -> { where(reserved_at: nil).where(order_id: nil) }
 
   def reserve!
     touch(:reserved_at)

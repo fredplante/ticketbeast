@@ -68,7 +68,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
 
   test "cannot purchase tickets another customer is already trying to purchase" do
     concert = create(:concert, :published, ticket_price: 1200).add_tickets(3)
-    PaymentGateway.expects(:create_adapter).twice.returns(@payment_gateway)
+    PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
 
     @payment_gateway.before_charge_callback = proc {
       order_tickets(concert, {

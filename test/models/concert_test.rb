@@ -70,4 +70,20 @@ class ConcertTest < ActiveSupport::TestCase
     assert_equal 2, reserved_tickets.count
     assert_equal 1, concert.tickets_remaining
   end
+
+  test "cannot reserve tickets that have already been purchased" do
+    concert = create(:concert).add_tickets(3)
+    concert.order_tickets("john.doe@acme.org", 2)
+
+    assert_raises(Concert::NotEnoughTicketsError) { concert.reserve_tickets(2) }
+    assert_equal 1, concert.tickets_remaining
+  end
+
+  test "cannot reserve tickets that have already been reserved" do
+    concert = create(:concert).add_tickets(3)
+    concert.reserve_tickets(2)
+
+    assert_raises(Concert::NotEnoughTicketsError) { concert.reserve_tickets(2) }
+    assert_equal 1, concert.tickets_remaining
+  end
 end
