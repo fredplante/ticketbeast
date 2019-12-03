@@ -16,14 +16,9 @@ class Concert < ApplicationRecord
   end
 
   def order_tickets(email, quantity)
-    orders.build(email: email, amount: ticket_price * quantity).tap do |order|
-      ordered_tickets = tickets.available.take(quantity)
-      if ordered_tickets.count < quantity
-        raise NotEnoughTicketsError.new("Not enough tickets available")
-      end
-      order.tickets = ordered_tickets
-      order.save
-    end
+    ordered_tickets = find_tickets(quantity)
+
+    create_order(email, ordered_tickets)
   end
 
   def add_tickets(quantity)
@@ -33,5 +28,22 @@ class Concert < ApplicationRecord
 
   def tickets_remaining
     tickets.available.count
+  end
+
+  def create_order(email, tickets)
+    order = orders.build(email: email, amount: ticket_price * tickets.count)
+    order.tickets = tickets
+    order.save
+    order
+  end
+
+  def find_tickets(quantity)
+    found_tickets = tickets.available.take(quantity)
+
+    if found_tickets.count < quantity
+      raise NotEnoughTicketsError.new("Not enough tickets available")
+    end
+
+    found_tickets
   end
 end
