@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 2019_12_02_132503) do
   create_table "orders", force: :cascade do |t|
     t.bigint "concert_id", null: false
     t.string "email", null: false
+    t.integer "amount", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["concert_id"], name: "index_orders_on_concert_id"

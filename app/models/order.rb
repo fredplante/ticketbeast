@@ -10,8 +10,4 @@ class Order < ApplicationRecord
     tickets.each { |ticket| ticket.release! }
     destroy
   end
-
-  def amount
-    concert.ticket_price * ticket_quantity
-  end
 end

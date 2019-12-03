@@ -16,7 +16,7 @@ class Concert < ApplicationRecord
   end
 
   def order_tickets(email, quantity)
-    orders.build(email: email).tap do |order|
+    orders.build(email: email, amount: ticket_price * quantity).tap do |order|
       ordered_tickets = tickets.available.take(quantity)
       if ordered_tickets.count < quantity
         raise NotEnoughTicketsError.new("Not enough tickets available")
