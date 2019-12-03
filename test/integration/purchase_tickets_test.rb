@@ -7,6 +7,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
 
   test "customer can purchase tickets to published concert" do
     concert = create(:concert, :published, ticket_price: 3250)
+    concert.add_tickets(3)
     PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
 
     order_tickets(concert, {
@@ -24,6 +25,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
 
   test "an order is not created if payment fails" do
     concert = create(:concert, :published, ticket_price: 3250)
+    concert.add_tickets(3)
     PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
 
     order_tickets(concert, {
@@ -38,6 +40,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
 
   test "cannot purchase tickets to an unpublished concert" do
     concert = create(:concert, :unpublished)
+    concert.add_tickets(3)
 
     order_tickets(concert, {
       email: "john@example.com", ticket_quantity: 3,
@@ -53,8 +56,6 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
     concert = create(:concert, :published)
     concert.add_tickets(50)
 
-    PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
-
     order_tickets(concert, {
       email: "john@example.com", ticket_quantity: 51,
                                    payment_token: @payment_gateway.valid_test_token
@@ -64,7 +65,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
     order = concert.orders.where(email: "john@example.com").first
     assert_nil order
     assert_equal 0, @payment_gateway.total_charges
-    assert_equal 50, order.tickets_remaining
+    assert_equal 50, concert.tickets_remaining
   end
 
   test "email is required to purchase tickets" do
