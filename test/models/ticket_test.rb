@@ -11,14 +11,11 @@ class TicketTest < ActiveSupport::TestCase
   end
 
   test "a ticket can be released" do
-    concert = create(:concert)
-    concert.add_tickets(1)
-    order = concert.order_tickets("jane.doe@acme.org", 1)
-    ticket = order.tickets.first
-    assert_equal concert.id, ticket.concert_id
+    ticket = create(:ticket, :reserved)
+    refute_nil ticket.reserved_at
 
     ticket.release!
 
-    assert_nil ticket.reload.order_id
+    assert_nil ticket.reload.reserved_at
   end
 end

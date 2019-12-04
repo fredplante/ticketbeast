@@ -16,6 +16,7 @@ class Concert::OrdersController < ApplicationController
       rescue Concert::NotEnoughTicketsError => error
         render json: { error: error.message }, status: :unprocessable_entity
       rescue PaymentGateway::PaymentFailedError => error
+        reservation.cancel!
         render json: { error: error.message }, status: :unprocessable_entity
       end
     else

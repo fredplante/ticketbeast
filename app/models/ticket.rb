@@ -9,7 +9,7 @@ class Ticket < ApplicationRecord
   end
 
   def release!
-    update!(order_id: nil)
+    update!(reserved_at: nil)
   end
 
   def price
