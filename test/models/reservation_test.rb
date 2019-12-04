@@ -2,16 +2,15 @@ require "test_helper"
 
 class ReservationTest < ActiveSupport::TestCase
   setup do
-    @ticket_1 = instance_double("Ticket").as_null_object
-    @ticket_2 = instance_double("Ticket").as_null_object
-    @ticket_3 = instance_double("Ticket").as_null_object
-    @tickets = [@ticket_1, @ticket_2, @ticket_3]
+    @tickets = [
+      instance_double("Ticket").as_null_object,
+      instance_double("Ticket").as_null_object,
+      instance_double("Ticket").as_null_object
+    ]
   end
 
   test "calculating the total cost" do
-    allow(@ticket_1).to receive(:price).and_return(1200)
-    allow(@ticket_2).to receive(:price).and_return(1200)
-    allow(@ticket_3).to receive(:price).and_return(1200)
+    @tickets.each { |ticket| expect(ticket).to receive(:price).and_return(1200) }
 
     reservation = Reservation.new(@tickets)
 
@@ -23,8 +22,6 @@ class ReservationTest < ActiveSupport::TestCase
 
     reservation.cancel!
 
-    expect(@ticket_1).to have_received(:release!).once
-    expect(@ticket_2).to have_received(:release!).once
-    expect(@ticket_3).to have_received(:release!).once
+    @tickets.each { |ticket| expect(ticket).to have_received(:release!) }
   end
 end
