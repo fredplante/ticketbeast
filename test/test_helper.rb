@@ -1,7 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
-require "mocha/minitest"
+require "rspec/mocks/minitest_integration"
 
 class ActiveSupport::TestCase
   include FactoryBot::Syntax::Methods

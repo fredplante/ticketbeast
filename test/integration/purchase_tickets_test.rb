@@ -7,7 +7,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
 
   test "customer can purchase tickets to a published concert" do
     concert = create(:concert, :published, ticket_price: 3250).add_tickets(3)
-    PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
+    expect(PaymentGateway).to receive(:create_adapter).and_return(@payment_gateway)
 
     order_tickets(concert, {
       email: "john@example.com", ticket_quantity: 3,
@@ -29,7 +29,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
 
   test "an order is not created if payment fails" do
     concert = create(:concert, :published, ticket_price: 3250).add_tickets(3)
-    PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
+    expect(PaymentGateway).to receive(:create_adapter).and_return(@payment_gateway)
 
     order_tickets(concert, {
       email: "john@example.com", ticket_quantity: 3, payment_token: "invalid-payment-token"
@@ -37,6 +37,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     refute concert.has_order_for?("john@example.com")
+    assert_equal 3, concert.tickets_remaining
   end
 
   test "cannot purchase tickets to an unpublished concert" do
@@ -68,7 +69,7 @@ class PurchaseTicketsTest < ActionDispatch::IntegrationTest
 
   test "cannot purchase tickets another customer is already trying to purchase" do
     concert = create(:concert, :published, ticket_price: 1200).add_tickets(3)
-    PaymentGateway.expects(:create_adapter).returns(@payment_gateway)
+    expect(PaymentGateway).to receive(:create_adapter).and_return(@payment_gateway)
 
     @payment_gateway.before_charge_callback = proc {
       order_tickets(concert, {
