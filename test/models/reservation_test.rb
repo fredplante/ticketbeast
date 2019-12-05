@@ -24,4 +24,10 @@ class ReservationTest < ActiveSupport::TestCase
 
     @tickets.each { |ticket| expect(ticket).to have_received(:release!) }
   end
+
+  test "retrieving the reservation tickets" do
+    reservation = Reservation.new(@tickets)
+
+    assert_equal reservation.tickets, @tickets
+  end
 end

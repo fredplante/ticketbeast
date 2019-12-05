@@ -8,7 +8,9 @@ class Concert < ApplicationRecord
   scope :published, ->{ where.not(published_at: nil) }
 
   def reserve_tickets(quantity)
-    find_tickets(quantity).each { |ticket| ticket.reserve! }
+    tickets = find_tickets(quantity)
+    tickets.each { |ticket| ticket.reserve! }
+    Reservation.new(tickets)
   end
 
   def has_order_for?(customer_email)

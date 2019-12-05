@@ -65,9 +65,9 @@ class ConcertTest < ActiveSupport::TestCase
     concert = create(:concert).add_tickets(3)
     assert_equal 3, concert.tickets_remaining
 
-    reserved_tickets = concert.reserve_tickets(2)
+    reservation = concert.reserve_tickets(2)
 
-    assert_equal 2, reserved_tickets.count
+    assert_equal 2, reservation.tickets.count
     assert_equal 1, concert.tickets_remaining
   end
 
