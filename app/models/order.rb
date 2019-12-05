@@ -12,9 +12,4 @@ class Order < ApplicationRecord
   def ticket_quantity
     tickets.count
   end
-
-  def cancel!
-    tickets.each { |ticket| ticket.release! }
-    destroy
-  end
 end
