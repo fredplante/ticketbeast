@@ -11,6 +11,10 @@ class Reservation
     tickets.map(&:price).sum
   end
 
+  def complete!
+    Order.for_tickets(tickets, email, total_cost)
+  end
+
   def cancel!
     tickets.each { |ticket| ticket.release! }
   end

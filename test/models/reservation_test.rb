@@ -36,4 +36,16 @@ class ReservationTest < ActiveSupport::TestCase
 
     assert_equal "john@example.com", reservation.email
   end
+
+  test "completing a reservation" do
+    concert = create(:concert, ticket_price: 1200)
+    tickets = create_list(:ticket, 3, concert: concert)
+    reservation = Reservation.new(tickets, "john@example.com")
+
+    order = reservation.complete!
+
+    assert_equal "john@example.com", order.email
+    assert_equal 3, order.ticket_quantity
+    assert_equal 3600, order.amount
+  end
 end

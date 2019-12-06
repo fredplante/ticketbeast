@@ -9,7 +9,7 @@ class Concert::OrdersController < ApplicationController
 
         payment_gateway.charge(reservation.total_cost, params[:payment_token])
 
-        @order = Order.for_tickets(reservation.tickets, params[:email], reservation.total_cost)
+        @order = reservation.complete!
 
         render :create, status: :created
       rescue Concert::NotEnoughTicketsError => error

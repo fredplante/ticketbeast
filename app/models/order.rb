@@ -9,13 +9,6 @@ class Order < ApplicationRecord
     order
   end
 
-  def self.from_reservation(reservation)
-    order = new(email: reservation.email, amount: reservation.total_cost)
-    order.tickets = reservation.tickets
-    order.save!
-    order
-  end
-
   def ticket_quantity
     tickets.count
   end
