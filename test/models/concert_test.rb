@@ -65,9 +65,10 @@ class ConcertTest < ActiveSupport::TestCase
     concert = create(:concert).add_tickets(3)
     assert_equal 3, concert.tickets_remaining
 
-    reservation = concert.reserve_tickets(2)
+    reservation = concert.reserve_tickets(2, "john@example.com")
 
     assert_equal 2, reservation.tickets.count
+    assert_equal "john@example.com", reservation.email
     assert_equal 1, concert.tickets_remaining
   end
 
@@ -75,15 +76,15 @@ class ConcertTest < ActiveSupport::TestCase
     concert = create(:concert).add_tickets(3)
     concert.order_tickets("john.doe@acme.org", 2)
 
-    assert_raises(Concert::NotEnoughTicketsError) { concert.reserve_tickets(2) }
+    assert_raises(Concert::NotEnoughTicketsError) { concert.reserve_tickets(2, "john@example.com") }
     assert_equal 1, concert.tickets_remaining
   end
 
   test "cannot reserve tickets that have already been reserved" do
     concert = create(:concert).add_tickets(3)
-    concert.reserve_tickets(2)
+    concert.reserve_tickets(2, "john@example.com")
 
-    assert_raises(Concert::NotEnoughTicketsError) { concert.reserve_tickets(2) }
+    assert_raises(Concert::NotEnoughTicketsError) { concert.reserve_tickets(2, "jane@example.com") }
     assert_equal 1, concert.tickets_remaining
   end
 end

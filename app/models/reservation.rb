@@ -1,9 +1,10 @@
 class Reservation
 
-  attr_reader :tickets
+  attr_reader :tickets, :email
 
-  def initialize(tickets)
+  def initialize(tickets, email)
     @tickets = tickets
+    @email = email
   end
 
   def total_cost

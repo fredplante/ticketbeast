@@ -5,7 +5,7 @@ class Concert::OrdersController < ApplicationController
     form = PurchaseTicketsForm.new(purchase_tickets_params)
     if form.valid?
       begin
-        reservation = @concert.reserve_tickets(params[:ticket_quantity])
+        reservation = @concert.reserve_tickets(params[:ticket_quantity], params[:email])
 
         payment_gateway.charge(reservation.total_cost, params[:payment_token])
 
