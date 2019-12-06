@@ -11,7 +11,8 @@ class Reservation
     tickets.map(&:price).sum
   end
 
-  def complete!
+  def complete!(payment_gateway, payment_token)
+    payment_gateway.charge(total_cost, payment_token)
     Order.for_tickets(tickets, email, total_cost)
   end
 

@@ -41,11 +41,13 @@ class ReservationTest < ActiveSupport::TestCase
     concert = create(:concert, ticket_price: 1200)
     tickets = create_list(:ticket, 3, concert: concert)
     reservation = Reservation.new(tickets, "john@example.com")
+    payment_gateway = PaymentGateway::FakeAdapter.new
 
-    order = reservation.complete!
+    order = reservation.complete!(payment_gateway,  payment_gateway.valid_test_token)
 
     assert_equal "john@example.com", order.email
     assert_equal 3, order.ticket_quantity
     assert_equal 3600, order.amount
+    assert_equal 3600, payment_gateway.total_charges
   end
 end
