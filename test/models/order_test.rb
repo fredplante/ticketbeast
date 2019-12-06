@@ -12,4 +12,16 @@ class OrderTest < ActiveSupport::TestCase
     assert_equal 3600, order.amount
     assert_equal 2, concert.tickets_remaining
   end
+
+  test "creating an order from a reservation" do
+    concert = create(:concert, ticket_price: 1200)
+    tickets = create_list(:ticket, 3, concert: concert)
+    reservation = Reservation.new(tickets, "john@example.com")
+
+    order = Order.from_reservation(reservation)
+
+    assert_equal "john@example.com", order.email
+    assert_equal 3, order.ticket_quantity
+    assert_equal 3600, order.amount
+  end
 end
