@@ -3,7 +3,12 @@ require "test_helper"
 class StripeAdapterTest < ActiveSupport::TestCase
 
   setup do
+    VCR.insert_cassette("stripe")
     @last_charge = find_last_charge
+  end
+
+  teardown do
+    VCR.eject_cassette
   end
 
   test "charges with a valid payment token are successful" do
