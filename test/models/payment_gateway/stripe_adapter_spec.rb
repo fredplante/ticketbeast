@@ -14,7 +14,8 @@ class StripeAdapterTest < ActiveSupport::TestCase
       },
     }, { api_key: ENV["STRIPE_SECRET_KEY"] })[:id]
 
-    byebug
-    # payment_gateway.charge(2500, token)
+    payment_gateway.charge(2500, token)
+
+    last_charge = Stripe::Charge.list({limit: 1}, { api_key: ENV["STRIPE_SECRET_KEY"] })[:data][0]
   end
 end
