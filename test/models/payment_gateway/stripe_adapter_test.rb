@@ -1,31 +1,32 @@
 require "test_helper"
 
 class StripeAdapterTest < ActiveSupport::TestCase
-
-  setup do
-    VCR.insert_cassette("stripe")
-    @last_charge = find_last_charge
-  end
-
-  teardown do
-    VCR.eject_cassette
-  end
-
   test "charges with a valid payment token are successful" do
+    last_charge = find_last_charge
     payment_gateway = PaymentGateway::StripeAdapter.new(ENV["STRIPE_SECRET_KEY"])
 
     payment_gateway.charge(2500, valid_token)
 
-    assert_equal 1, new_charges.count
+    assert_equal 1, new_charges(last_charge).count
     assert_equal 2500, find_last_charge[:amount]
+  end
+
+  test "charges win an invalid payment token fails" do
+    last_charge = find_last_charge
+    payment_gateway = PaymentGateway::StripeAdapter.new(ENV["STRIPE_SECRET_KEY"])
+
+    assert_raises(PaymentGateway::PaymentFailedError) {
+      payment_gateway.charge(2500, "invalid-payment-token")
+    }
+    assert_equal 0, new_charges(last_charge).count
   end
 
   private
 
-  def new_charges
+  def new_charges(charge)
     Stripe::Charge.list({
       limit: 1,
-      ending_before: @last_charge
+      ending_before: charge
     }, { api_key: ENV["STRIPE_SECRET_KEY"] })[:data]
   end
 

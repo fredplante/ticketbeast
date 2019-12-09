@@ -11,6 +11,8 @@ module PaymentGateway
         currency: "eur",
         source: token
       }, { api_key: @api_key })
+    rescue Stripe::InvalidRequestError => e
+      raise PaymentFailedError.new("Invalid token")
     end
   end
 end
