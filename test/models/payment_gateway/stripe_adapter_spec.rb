@@ -2,10 +2,30 @@ require "test_helper"
 
 class StripeAdapterTest < ActiveSupport::TestCase
 
+  setup do
+    @last_charge = find_last_charge
+  end
+
   test "charges with a valid payment token are successful" do
     payment_gateway = PaymentGateway::StripeAdapter.new(ENV["STRIPE_SECRET_KEY"])
 
-    token = Stripe::Token.create({
+    payment_gateway.charge(2500, valid_token)
+
+    assert_equal 1, new_charges.count
+    assert_equal 2500, find_last_charge[:amount]
+  end
+
+  private
+
+  def new_charges
+    Stripe::Charge.list({
+      limit: 1,
+      ending_before: @last_charge
+    }, { api_key: ENV["STRIPE_SECRET_KEY"] })[:data]
+  end
+
+  def valid_token
+    Stripe::Token.create({
       card: {
         number: "4242424242424242",
         exp_month: 1,
@@ -13,12 +33,9 @@ class StripeAdapterTest < ActiveSupport::TestCase
         cvc: "123",
       },
     }, { api_key: ENV["STRIPE_SECRET_KEY"] })[:id]
+  end
 
-    payment_gateway.charge(2500, token)
-
-    last_charge = Stripe::Charge.list({limit: 1}, { api_key: ENV["STRIPE_SECRET_KEY"] })[:data][0]
-
-    refute_nil last_charge
-    assert_equal 2500, last_charge[:amount]
+  def find_last_charge
+    Stripe::Charge.list({limit: 1}, { api_key: ENV["STRIPE_SECRET_KEY"] })[:data][0]
   end
 end
