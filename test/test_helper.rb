@@ -6,6 +6,7 @@ require "vcr"
 
 VCR.configure do |config|
   config.cassette_library_dir = "support/cassettes"
+  config.ignore_request { ENV["DISABLE_VCR"] }
   config.hook_into :webmock
 end
 
