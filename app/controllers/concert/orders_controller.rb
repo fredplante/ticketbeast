@@ -4,16 +4,16 @@ class Concert::OrdersController < ApplicationController
   def create
     form = PurchaseTicketsForm.new(purchase_tickets_params)
     if form.valid?
-      begin
-        reservation = @concert.reserve_tickets(params[:ticket_quantity], params[:email])
-        @order = reservation.complete!(payment_gateway, params[:payment_token])
-        render :create, status: :created
-      rescue Concert::NotEnoughTicketsError => error
-        render json: { error: error.message }, status: :unprocessable_entity
-      rescue PaymentGateway::PaymentFailedError => error
-        reservation.cancel!
-        render json: { error: error.message }, status: :unprocessable_entity
-      end
+    begin
+      reservation = @concert.reserve_tickets(params[:ticket_quantity].to_i, params[:email])
+      @order = reservation.complete!(payment_gateway, params[:payment_token])
+      render :create, status: :created
+    rescue Concert::NotEnoughTicketsError => error
+      render json: { error: error.message }, status: :unprocessable_entity
+    rescue PaymentGateway::PaymentFailedError => error
+      reservation.cancel!
+      render json: { error: error.message }, status: :unprocessable_entity
+    end
     else
       render json: form.errors, status: :unprocessable_entity
     end

@@ -1,8 +1,8 @@
 class ConcertPresenter < BasePresenter
   presents :concert
 
-  delegate :title, :subtitle, :venue, :venue_address, :city, :state,
-           :zip, :additional_information, to: :concert
+  delegate :id, :title, :subtitle, :venue, :venue_address, :city, :state,
+           :zip, :additional_information, :ticket_price, to: :concert
 
   def formatted_date
     concert.date.strftime("%B %-d, %Y")
@@ -15,5 +15,4 @@ class ConcertPresenter < BasePresenter
   def ticket_price_in_dollars
     number_with_precision(concert.ticket_price.to_f / 100, precision: 2)
   end
-
 end

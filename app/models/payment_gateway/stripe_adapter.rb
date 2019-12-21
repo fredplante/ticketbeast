@@ -1,7 +1,7 @@
 module PaymentGateway
   class StripeAdapter
 
-    def initialize(api_key)
+    def initialize(api_key = ENV["STRIPE_SECRET_KEY"])
       @api_key = api_key
     end
 
