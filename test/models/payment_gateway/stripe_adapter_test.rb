@@ -4,9 +4,8 @@ class StripeAdapterTest < ActiveSupport::TestCase
   test "charges with a valid payment token are successful" do
     VCR.use_cassette(cassette_name(class_name, name)) do
       last_charge = find_last_charge
-      payment_gateway = PaymentGateway::StripeAdapter.new(ENV["STRIPE_SECRET_KEY"])
-
-      payment_gateway.charge(2500, valid_token)
+      payment_gateway = create_payment_gateway
+      payment_gateway.charge(2500, payment_gateway.valid_test_token)
 
       assert_equal 1, new_charges(last_charge).count
       assert_equal 2500, find_last_charge[:amount]
@@ -26,6 +25,10 @@ class StripeAdapterTest < ActiveSupport::TestCase
   end
 
   private
+
+  def create_payment_gateway
+    PaymentGateway::StripeAdapter.new(ENV["STRIPE_SECRET_KEY"])
+  end
 
   def cassette_name(class_name, test_name)
     [class_name, test_name].map do |str|

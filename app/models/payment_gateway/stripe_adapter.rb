@@ -14,5 +14,16 @@ module PaymentGateway
     rescue Stripe::InvalidRequestError => e
       raise PaymentFailedError.new("Invalid token")
     end
+
+    def valid_test_token
+      Stripe::Token.create({
+        card: {
+          number: "4242424242424242",
+          exp_month: 1,
+          exp_year: Date.today.year + 1,
+          cvc: "123",
+        },
+      }, { api_key: @api_key })[:id]
+    end
   end
 end

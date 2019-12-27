@@ -2,7 +2,7 @@ require "test_helper"
 
 class FakeAdapterTest < ActiveSupport::TestCase
   test "charges with a valid payment token are successful" do
-    payment_gateway = PaymentGateway::FakeAdapter.new
+    payment_gateway = create_payment_gateway
 
     payment_gateway.charge(2500, payment_gateway.valid_test_token)
 
@@ -31,5 +31,11 @@ class FakeAdapterTest < ActiveSupport::TestCase
     payment_gateway.charge(2500, payment_gateway.valid_test_token)
     assert_equal 5000, payment_gateway.total_charges
     assert_equal 1, callback_ran_count
+  end
+
+  private
+
+  def create_payment_gateway
+    PaymentGateway::FakeAdapter.new
   end
 end
