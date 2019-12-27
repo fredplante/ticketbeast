@@ -31,7 +31,7 @@ module PaymentGateway
     def new_charges_during(&block)
       charges_count = @charges.count
       yield
-      @charges[charges_count, @charges.count]
+      @charges[charges_count, @charges.count].reverse
     end
 
     private

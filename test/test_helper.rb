@@ -3,6 +3,7 @@ require_relative '../config/environment'
 require 'rails/test_help'
 require "rspec/mocks/minitest_integration"
 require "vcr"
+Dir[Rails.root.join("test", "support", "shared_tests", "*.rb")].each { |file| require file }
 
 VCR.configure do |config|
   config.cassette_library_dir = "test/support/cassettes"
@@ -17,6 +18,14 @@ class ActiveSupport::TestCase
 
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
+
+  private
+
+  def cassette_name(class_name, test_name)
+    [class_name, test_name].map do |str|
+      str.underscore.gsub(/[^A-Z]+/i, "_")
+    end.join("/")
+  end
 end
 
 class ActionDispatch::IntegrationTest

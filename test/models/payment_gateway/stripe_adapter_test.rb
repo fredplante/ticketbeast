@@ -1,18 +1,7 @@
 require "test_helper"
 
 class StripeAdapterTest < ActiveSupport::TestCase
-  test "charges with a valid payment token are successful" do
-    VCR.use_cassette(cassette_name(class_name, name)) do
-      payment_gateway = create_payment_gateway
-
-      new_charges = payment_gateway.new_charges_during do
-        payment_gateway.charge(2500, payment_gateway.valid_test_token)
-      end
-
-      assert_equal 1, new_charges.count
-      assert_equal 2500, new_charges.sum
-    end
-  end
+  include PaymentGatewayContractTest
 
   test "charges win an invalid payment token fails" do
     VCR.use_cassette(cassette_name(class_name, name)) do
@@ -30,12 +19,6 @@ class StripeAdapterTest < ActiveSupport::TestCase
 
   def create_payment_gateway
     PaymentGateway::StripeAdapter.new(ENV["STRIPE_SECRET_KEY"])
-  end
-
-  def cassette_name(class_name, test_name)
-    [class_name, test_name].map do |str|
-      str.underscore.gsub(/[^A-Z]+/i, "_")
-    end.join("/")
   end
 
   def new_charges(charge)
