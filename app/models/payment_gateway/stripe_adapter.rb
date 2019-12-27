@@ -25,5 +25,23 @@ module PaymentGateway
         },
       }, { api_key: @api_key })[:id]
     end
+
+    def new_charges_during(&block)
+      latest_charge = last_charge
+      yield
+      new_charges_since(latest_charge)
+    end
+
+    private
+
+    def last_charge
+      Stripe::Charge.list({limit: 1}, { api_key: @api_key })[:data][0]
+    end
+
+    def new_charges_since(charge = nil)
+      Stripe::Charge.list({
+        ending_before: charge ? charge[:id] : nil
+      }, { api_key: @api_key })[:data]
+    end
   end
 end

@@ -3,12 +3,14 @@ require "test_helper"
 class StripeAdapterTest < ActiveSupport::TestCase
   test "charges with a valid payment token are successful" do
     VCR.use_cassette(cassette_name(class_name, name)) do
-      last_charge = find_last_charge
       payment_gateway = create_payment_gateway
-      payment_gateway.charge(2500, payment_gateway.valid_test_token)
 
-      assert_equal 1, new_charges(last_charge).count
-      assert_equal 2500, find_last_charge[:amount]
+      new_charges = payment_gateway.new_charges_during do
+        payment_gateway.charge(2500, payment_gateway.valid_test_token)
+      end
+
+      assert_equal 1, new_charges.count
+      assert_equal 2500, new_charges.sum(&:amount)
     end
   end
 
