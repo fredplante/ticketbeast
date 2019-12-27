@@ -27,6 +27,13 @@ module PaymentGateway
       "valid-test-token"
     end
 
+
+    def new_charges_during(&block)
+      charges_count = @charges.count
+      yield
+      @charges[charges_count, @charges.count]
+    end
+
     private
 
     def run_before_charge_callback

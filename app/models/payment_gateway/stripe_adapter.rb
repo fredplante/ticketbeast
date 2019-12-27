@@ -39,9 +39,9 @@ module PaymentGateway
     end
 
     def new_charges_since(charge = nil)
-      Stripe::Charge.list({
+      aze = Stripe::Charge.list({
         ending_before: charge ? charge[:id] : nil
-      }, { api_key: @api_key })[:data]
+      }, { api_key: @api_key })[:data].map(&:amount)
     end
   end
 end

@@ -10,7 +10,7 @@ class StripeAdapterTest < ActiveSupport::TestCase
       end
 
       assert_equal 1, new_charges.count
-      assert_equal 2500, new_charges.sum(&:amount)
+      assert_equal 2500, new_charges.sum
     end
   end
 
