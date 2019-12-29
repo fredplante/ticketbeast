@@ -3,14 +3,6 @@ require "test_helper"
 class FakeAdapterTest < ActiveSupport::TestCase
   include PaymentGatewayContractTest
 
-  test "charges win an invalid payment token fails" do
-    payment_gateway = PaymentGateway::FakeAdapter.new
-
-    assert_raises(PaymentGateway::PaymentFailedError) {
-      payment_gateway.charge(2500, "invalid-payment-token")
-    }
-  end
-
   test "running a hook before the first charge" do
     payment_gateway = PaymentGateway::FakeAdapter.new
     callback_ran_count = 0

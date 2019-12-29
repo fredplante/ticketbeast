@@ -31,5 +31,19 @@ module PaymentGatewayContractTest
         assert_equal [5000, 4000], new_charges
       end
     end
+
+    test "charges win an invalid payment token fails" do
+      VCR.use_cassette(cassette_name(class_name, name)) do
+        payment_gateway = create_payment_gateway
+
+        new_charges = payment_gateway.new_charges_during do
+          assert_raises(PaymentGateway::PaymentFailedError) {
+            payment_gateway.charge(2500, "invalid-payment-token")
+          }
+        end
+
+        assert_equal 0, new_charges.count
+      end
+    end
   end
 end
