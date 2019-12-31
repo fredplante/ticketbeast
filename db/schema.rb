@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2019_12_02_132503) do
   end
 
   create_table "orders", force: :cascade do |t|
+    t.string "confirmation_number", null: false
     t.string "email", null: false
     t.integer "amount", null: false
     t.datetime "created_at", null: false
